@@ -69,11 +69,14 @@ class MonitorData
                     $entry = $this->_parseEntryData($v);
 
                     if (Arr::get($entry, 'code') == 200) {
-                        $entry = Arr::get($entry, 'data');
+                        $entry  = Arr::get($entry, 'data');
+                        $taskId = md5(json_encode($entry));
 
-                        Log::info('解析数据', json_encode($entry));
+                        Log::info(sprintf('%s[Data]:%s', $taskId, json_encode($entry)));
 
-                        $this->_sendQuery($entry);
+                        sgo(function () use ($taskId, $entry) {
+                            $this->_sendQuery($taskId, $entry);
+                        });
                     }
                 }
             }
@@ -90,10 +93,11 @@ class MonitorData
      * 发送数据
      *
      * @access public
-     * @param array $data 发送数据
+     * @param string $taskId 任务ID
+     * @param array  $data   发送数据
      * @return array
      */
-    private function _sendQuery(array $data)
+    private function _sendQuery(string $taskId, array $data)
     {
         $status = ['code' => 0, 'data' => [], 'message' => ''];
 
@@ -107,7 +111,7 @@ class MonitorData
 
             if ( ! empty($url)) {
                 $query = sendRequest($url, $data, [], 'POST');
-                Log::info('URL发送结果:', (Arr::get($query, 'code') == 200) ? '发送成功！' : Arr::get($query, 'message'));
+                Log::info(sprintf('%s[URL]:%s', $taskId, (Arr::get($query, 'code') == 200) ? '发送成功！' : Arr::get($query, 'message')));
             }
 
             // NSQ队列
@@ -130,7 +134,7 @@ class MonitorData
                     $str = '服务器连接失败!';
                 }
 
-                Log::info('NSQ发送结果:', $str);
+                Log::info(sprintf('%s[NSQ]:%s', $taskId, $str));
             }
 
             $status = ['code' => 200, 'data' => [], 'message' => ''];
