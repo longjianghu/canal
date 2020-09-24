@@ -74,7 +74,6 @@ class MonitorData
                         Log::info('解析数据', json_encode($entry));
 
                         $this->_sendQuery($entry);
-
                     }
                 }
             }

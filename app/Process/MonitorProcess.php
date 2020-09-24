@@ -4,7 +4,6 @@ namespace App\Process;
 
 use App\Model\Data\MonitorData;
 
-use Swoole\Coroutine;
 use Swoft\Process\Process;
 use Swoft\Process\UserProcess;
 use Swoft\Bean\Annotation\Mapping\Bean;
