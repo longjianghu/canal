@@ -1,5 +1,7 @@
 <?php declare(strict_types=1);
 
+use App\Process\MonitorProcess;
+
 use Swoft\Server\SwooleEvent;
 use Swoft\Http\Server\HttpServer;
 use Swoft\Log\Handler\FileHandler;
@@ -14,7 +16,9 @@ return [
             SwooleEvent::TASK   => \bean(TaskListener::class),
             SwooleEvent::FINISH => \bean(FinishListener::class)
         ],
-        'process' => [],
+        'process' => [
+            'monitor' => bean(MonitorProcess::class)
+        ],
         'setting' => [
             'task_enable_coroutine' => true,
             'enable_static_handler' => true,

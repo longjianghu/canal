@@ -2,11 +2,13 @@
 
 namespace App\Process;
 
-use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Annotation\Mapping\Inject;
-use Swoft\Db\Exception\DbException;
+use App\Model\Data\MonitorData;
+
+use Swoole\Coroutine;
 use Swoft\Process\Process;
 use Swoft\Process\UserProcess;
+use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Annotation\Mapping\Inject;
 
 /**
  * MonitorProcess
@@ -17,13 +19,17 @@ use Swoft\Process\UserProcess;
 class MonitorProcess extends UserProcess
 {
     /**
+     * @Inject()
+     * @var MonitorData
+     */
+    private $_monitorData;
+
+    /**
      * @param Process $process
      * @throws DbException
      */
     public function run(Process $process): void
     {
-        while (true) {
-
-        }
+        $this->_monitorData->monitor();
     }
 }
