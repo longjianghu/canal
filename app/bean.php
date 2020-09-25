@@ -22,7 +22,7 @@ return [
         'setting' => [
             'task_enable_coroutine' => true,
             'enable_static_handler' => true,
-            'worker_num'            => 6,
+            'worker_num'            => 1,
             'document_root'         => dirname(__DIR__).'/public',
         ]
     ],
