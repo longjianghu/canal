@@ -52,7 +52,7 @@ class MonitorData
 
         try {
             $canal  = $this->_canal;
-            $client = CanalConnectorFactory::createClient(CanalClient::TYPE_SOCKET_CLUE);
+            $client = CanalConnectorFactory::createClient(CanalClient::TYPE_SWOOLE);
 
             $client->connect(Arr::get($canal, 'host'), Arr::get($canal, 'port'));
             $client->checkValid();
