@@ -37,7 +37,6 @@ class MonitorProcess extends UserProcess
 
     /**
      * @param Process $process
-     * @throws DbException
      */
     public function run(Process $process): void
     {
