@@ -4,7 +4,7 @@
 
 ## 项目说明
 
-使用Canal Server监听数据库变动,目前支持使用HTTP POST和和投递到NSQ消息队列两种处理方式(协程方式)。
+使用[Canal Server](https://github.com/alibaba/canal)监听数据库变动,目前支持使用HTTP POST和和投递到NSQ消息队列两种处理方式(协程方式)。
 
 HTTP POST:当程序监听到变化后，使用HTTP POST的方式把数据提交到指定的地址。
 
@@ -45,10 +45,6 @@ docker run --name canal.server \
 			-e canal.instance.dbPassword=password \
 			-d canal/canal-server:v1.1.4
 ```
-
-## 配置说明
-
-https://github.com/alibaba/canal/wiki/AdminGuide
 
 ## NSQ 消息队列
 ```
