@@ -40,6 +40,8 @@ class MonitorProcess extends UserProcess
      */
     public function run(Process $process): void
     {
+        Log::info(sprintf('连接Canal Server服务器！'));
+
         try {
             $canal  = $this->_canal;
             $client = CanalConnectorFactory::createClient(CanalClient::TYPE_SWOOLE);
@@ -57,7 +59,6 @@ class MonitorProcess extends UserProcess
 
                         if (Arr::get($entry, 'code') == 200) {
                             $entry = Arr::get($entry, 'data');
-
                             $this->_monitorData->send($entry);
                         }
                     }

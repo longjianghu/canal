@@ -49,6 +49,10 @@ class MonitorData
                 throw new \Exception('实例数据不能为空！');
             }
 
+            if (in_array($entry->getEntryType(), [EntryType::TRANSACTIONBEGIN, EntryType::TRANSACTIONEND])) {
+                throw new \Exception('事务事件直接忽略！');
+            }
+
             $rowChange = new RowChange();
             $rowChange->mergeFromString($entry->getStoreValue());
 
@@ -94,9 +98,9 @@ class MonitorData
                 }
             }
 
-            $logs = json_encode($data);
+            $data = json_encode($data);
 
-            Log::info(sprintf('%s[Data]:%s', md5($logs), $logs));
+            Log::info(sprintf('%s[Data]:%s', md5($data), $data));
 
             $status = ['code' => 200, 'data' => $data, 'message' => ''];
         } catch (\Throwable $e) {
@@ -110,10 +114,10 @@ class MonitorData
      * 发送数据
      *
      * @access public
-     * @param array $data 发送数据
+     * @param string $data 发送数据
      * @return array
      */
-    public function send(array $data)
+    public function send(string $data)
     {
         $status = ['code' => 0, 'data' => [], 'message' => ''];
 
@@ -122,13 +126,13 @@ class MonitorData
                 throw new \Exception('发送数据不能为空！');
             }
 
-            $taskId = md5(json_encode($data));
+            $taskId = md5($data);
 
             // POST提交数据
             $url = $this->_serverUrl;
 
             if ( ! empty($url)) {
-                $query = sendRequest($url, $data, [], 'POST');
+                $query = sendRequest($url, ['data' => $data], [], 'POST');
                 Log::info(sprintf('%s[URL]:%s', $taskId, (Arr::get($query, 'code') == 200) ? '发送成功！' : Arr::get($query, 'message')));
             }
 
@@ -144,7 +148,7 @@ class MonitorData
                 $isConnected = $nsq->connectNsqd($hosts);
 
                 if ( ! empty($isConnected)) {
-                    $nsq->publish($topic, json_encode($data));
+                    $nsq->publish($topic, $data);
                     $nsq->closeNsqdConnection();
 
                     $str = '发送成功!';
@@ -170,7 +174,7 @@ class MonitorData
      * @param Column $columns 数据列
      * @return array
      */
-    private function _getColumnData(Column $columns)
+    private function _getColumnData($columns)
     {
         $data = [];
 
