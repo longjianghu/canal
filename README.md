@@ -1,8 +1,8 @@
 # Swoft Canal
 
-基于 Swoft 开发的PHP版的Canal Client客户端。
+基于 Swoft 开发的Canal Client客户端
 
-### 项目说明
+## 项目说明
 
 使用Canal Server监听数据库变动,目前支持使用HTTP POST和和投递到NSQ消息队列两种处理方式(协程方式)。
 
@@ -14,13 +14,15 @@ NSQ 消息队列：把数据投递到NSQ消息队列，等待客户端进行消�
 
 > 在runtime/logs目录下会有对应的日志文件可以进行查看。
 
-#### 数据格式：
+## 数据格式：
+
+当数据发生变化时rawData和newData会产生对应的数据，创建表等操作会直接输出SQL语句。
 
 ```
 {"filename":"mysql-bin.000073","offset":554812760,"schemaName":"test","tableName":"users","eventType":8,"sql":"TRUNCATE `users`;","rawData":[],"newData":[]}
 ```
 
-### 安装 Docker
+## 安装 Docker
 
 ```
 curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun
@@ -30,7 +32,7 @@ usermod -aG docker  root
 systemctl start docker
 ```
 
-### Canal Server使用说明
+## Canal Server使用说明
 
 详细介绍请移步：https://github.com/alibaba/canal/wiki/Docker-QuickStart
 
@@ -44,11 +46,11 @@ docker run --name canal.server \
 			-d canal/canal-server:v1.1.4
 ```
 
-### 配置说明
+## 配置说明
 
 https://github.com/alibaba/canal/wiki/AdminGuide
 
-### NSQ 消息队列
+## NSQ 消息队列
 ```
 docker run --name nsqlookupd -p 4160:4160 -p 4161:4161 -d nsqio/nsq /nsqlookupd
 
@@ -58,7 +60,7 @@ docker run --name nsqadmin -p 4171:4171 -d nsqio/nsq /nsqadmin -lookupd-http-add
 ```
 > 请注意：如果不是本地请指定内网或者外网IP地址(nsqd和nsqadmin容器), max-req-timeout延迟消息最大值！！！
 
-### 运行方法
+## 运行方法
 
 克隆项目到本地
 
