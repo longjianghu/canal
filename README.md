@@ -8,7 +8,7 @@
 
 HTTP POST:当程序监听到变化后，使用HTTP POST的方式把数据提交到指定的地址。
 
-> URL可以有多个使用英文逗号分隔,使用data接收变量
+> URL可以有多个使用英文逗号分隔,使用data接收变量。
 
 NSQ 消息队列：把数据投递到NSQ消息队列，等待客户端进行消费。
 
@@ -60,22 +60,34 @@ docker run --name nsqadmin -p 4171:4171 -d nsqio/nsq /nsqadmin -lookupd-http-add
 
 ### 运行方法
 
+克隆项目到本地
+
+```
+git clone https://github.com/longjianghu/swoft.canal.git
+```
+
 step1:
+
 > /data/var/www/canal请根据你的实际路径进行调整。
 
 ```
 docker run --rm -it -v /data/var/www/canal:/data longjianghu/swoft:4.5.2 sh
 ```
+
 setp2:
+
 ```
 composer install
 ```
+
 step3:
+
 ```
 cp .env.example .env 
 
 vi .env // 请根据实际情况修改配置参数
 ```
+
 step4:
 
 退出窗口并执行
