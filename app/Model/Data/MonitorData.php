@@ -171,10 +171,10 @@ class MonitorData
      * 获取数据列
      *
      * @access private
-     * @param Column $columns 数据列
+     * @param object $columns 数据列
      * @return array
      */
-    private function _getColumnData($columns)
+    private function _getColumnData(object $columns)
     {
         $data = [];
 

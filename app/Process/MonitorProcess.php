@@ -55,12 +55,14 @@ class MonitorProcess extends UserProcess
 
                 if ( ! empty($message)) {
                     foreach ($message as $k => $v) {
-                        $entry = $this->_monitorData->parseEntryData($v);
+                        sgo(function () use ($v) {
+                            $entry = $this->_monitorData->parseEntryData($v);
 
-                        if (Arr::get($entry, 'code') == 200) {
-                            $entry = Arr::get($entry, 'data');
-                            $this->_monitorData->send($entry);
-                        }
+                            if (Arr::get($entry, 'code') == 200) {
+                                $entry = Arr::get($entry, 'data');
+                                $this->_monitorData->send($entry);
+                            }
+                        });
                     }
                 }
 
