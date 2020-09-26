@@ -56,12 +56,9 @@ class MonitorProcess extends UserProcess
                         $entry = $this->_monitorData->parseEntryData($v);
 
                         if (Arr::get($entry, 'code') == 200) {
-                            $entry  = Arr::get($entry, 'data');
-                            $taskId = md5(json_encode($entry));
+                            $entry = Arr::get($entry, 'data');
 
-                            Log::info(sprintf('%s[Data]:%s', $taskId, json_encode($entry)));
-
-                            $this->_monitorData->send($taskId, $entry);
+                            $this->_monitorData->send($entry);
                         }
                     }
                 }

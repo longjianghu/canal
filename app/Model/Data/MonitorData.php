@@ -94,6 +94,10 @@ class MonitorData
                 }
             }
 
+            $logs = json_encode($data);
+
+            Log::info(sprintf('%s[Data]:%s', md5($logs), $logs));
+
             $status = ['code' => 200, 'data' => $data, 'message' => ''];
         } catch (\Throwable $e) {
             $status['message'] = $e->getMessage();
@@ -106,11 +110,10 @@ class MonitorData
      * 发送数据
      *
      * @access public
-     * @param string $taskId 任务ID
-     * @param array  $data   发送数据
+     * @param array $data 发送数据
      * @return array
      */
-    public function send(string $taskId, array $data)
+    public function send(array $data)
     {
         $status = ['code' => 0, 'data' => [], 'message' => ''];
 
@@ -118,6 +121,8 @@ class MonitorData
             if (empty($data)) {
                 throw new \Exception('发送数据不能为空！');
             }
+
+            $taskId = md5(json_encode($data));
 
             // POST提交数据
             $url = $this->_serverUrl;
