@@ -132,16 +132,19 @@ class MonitorData
             $url = $this->_serverUrl;
 
             if ( ! empty($url)) {
-                $url = explode(',', $url);
+                $args = [];
+                $url  = explode(',', $url);
 
                 foreach ($url as $k => $v) {
                     if ( ! filter_var($v, FILTER_VALIDATE_URL)) {
                         continue;
                     }
 
-                    $query = sendRequest($v, ['data' => $data], [], 'POST');
-                    Log::info(sprintf('%s[URL]:%s', $taskId, (Arr::get($query, 'code') == 200) ? '发送成功！' : Arr::get($query, 'message')));
+                    $args[] = ['url' => $v, 'method' => 'post', 'query' => ['data' => $data]];
                 }
+
+                $query = sendMultiRequest($args);
+                Log::info(sprintf('%s[URL]:%s', $taskId, (Arr::get($query, 'code') == 200) ? '发送成功！' : Arr::get($query, 'message')));
             }
 
             // NSQ队列
@@ -150,9 +153,14 @@ class MonitorData
             $topic      = Arr::get($this->_nsq, 'topic');
 
             if ( ! empty($clientIp)) {
-                $nsq   = new \Nsq();
-                $hosts = [sprintf('%s:%s', $clientIp, $clientPort)];
+                $hosts    = [];
+                $clientIp = explode(',', $clientIp);
 
+                foreach ($clientIp as $k => $v) {
+                    $hosts[] = sprintf('%s:%s', $v, $clientPort);
+                }
+
+                $nsq         = new \Nsq();
                 $isConnected = $nsq->connectNsqd($hosts);
 
                 if ( ! empty($isConnected)) {
