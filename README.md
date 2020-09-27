@@ -61,14 +61,14 @@ docker run --name nsqadmin -p 4171:4171 -d nsqio/nsq /nsqadmin -lookupd-http-add
 ## 运行镜像
 
 ```
-docker run --name canal.client -v /data/etc/canal.config:/data/.env -v /data/var/log/canal/.env:/data/runtime/logs --restart=always -d longjianghu/canal:1.0.0
+docker run --name canal.client -v /data/etc/canal:/data/.env -v /data/var/log/canal/.env:/data/runtime/logs --restart=always -d longjianghu/canal:1.0.0
 ```
 
 > 请根据你的实际路径进行调整
 
-## 安装步骤
+## 自行部署
 
-克隆项目到本地
+首先克隆项目到本地
 
 ```
 git clone https://github.com/longjianghu/swoft.canal.git
