@@ -1,6 +1,6 @@
 # Swoft Canal
 
-基于 Swoft 开发的Canal Client客户端(使用Docker配置的原理，一个服务端只能搭配一个客户端)
+基于 Swoft 开发的Canal Client客户端(使用Docker方式部署，一个服务端只能搭配一个客户端)
 
 ## 项目说明
 
