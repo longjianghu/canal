@@ -24,9 +24,9 @@ use Swoft\Config\Annotation\Mapping\Config;
 class MonitorData
 {
     /**
-     * @Config("app.serverUrl")
+     * @Config("app.apiUrl")
      */
-    private $_serverUrl;
+    private $_apiUrl;
 
     /**
      * @Config("app.nsq")
@@ -129,13 +129,13 @@ class MonitorData
             $taskId = md5($data);
 
             // POST提交数据
-            $url = $this->_serverUrl;
+            $apiUrl = $this->_apiUrl;
 
-            if ( ! empty($url)) {
-                $args = [];
-                $url  = explode(',', $url);
+            if ( ! empty($apiUrl)) {
+                $args   = [];
+                $apiUrl = explode(',', $apiUrl);
 
-                foreach ($url as $k => $v) {
+                foreach ($apiUrl as $k => $v) {
                     if ( ! filter_var($v, FILTER_VALIDATE_URL)) {
                         continue;
                     }
@@ -143,8 +143,10 @@ class MonitorData
                     $args[] = ['url' => $v, 'method' => 'post', 'query' => ['data' => $data]];
                 }
 
-                $query = sendMultiRequest($args);
-                Log::info(sprintf('%s[URL]:%s', $taskId, (Arr::get($query, 'code') == 200) ? '发送成功！' : Arr::get($query, 'message')));
+                if ( ! empty($args)) {
+                    $query = sendMultiRequest($args);
+                    Log::info(sprintf('%s[URL]:%s', $taskId, (Arr::get($query, 'code') == 200) ? '发送成功！' : Arr::get($query, 'message')));
+                }
             }
 
             // NSQ队列
