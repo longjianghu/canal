@@ -18,6 +18,8 @@ NSQ 消息队列：把数据投递到NSQ消息队列，等待客户端进行消�
 
 当数据发生变化时rawData和newData会产生对应的数据，创建表等操作会直接输出SQL语句。
 
+Tips:只有SQL语句通常是对数据表的操作，rawData和newData同时产生表示更新,只有rawData表示删除，反之表示新建。
+
 ```
 {"filename":"mysql-bin.000073","offset":554812760,"schemaName":"test","tableName":"users","eventType":8,"sql":"TRUNCATE `users`;","rawData":[],"newData":[]}
 ```
@@ -56,7 +58,15 @@ docker run --name nsqadmin -p 4171:4171 -d nsqio/nsq /nsqadmin -lookupd-http-add
 ```
 > 请注意：如果不是本地请指定内网或者外网IP地址(nsqd和nsqadmin容器), max-req-timeout延迟消息最大值！！！
 
-## 运行方法
+## 运行镜像
+
+```
+docker run --name canal.client -v /data/etc/canal.config:/data/.env -v /data/var/log/canal/.env:/data/runtime/logs --restart=always -d longjianghu/canal:1.0.0
+```
+
+> 请根据你的实际路径进行调整
+
+## 安装步骤
 
 克隆项目到本地
 
@@ -91,7 +101,7 @@ step4:
 退出窗口并执行
 
 ```
-docker run --name canal.client -v /data/var/www/canal:/data -d longjianghu/swoft:4.5.2
+docker run --name canal.client -v /data/var/www/canal:/data --restart=always -d longjianghu/swoft:4.5.2
 ```
 
 > 因为不需要外部链接所以不用开放端口
