@@ -4,13 +4,14 @@ namespace App\Process;
 
 use App\Data\SendData;
 
-use Hyperf\Config\Annotation\Value;
-use Hyperf\Di\Annotation\Inject;
-use Hyperf\Process\AbstractProcess;
-use Hyperf\Utils\Arr;
 use Psr\Container\ContainerInterface;
 use xingwenge\canal_php\CanalClient;
 use xingwenge\canal_php\CanalConnectorFactory;
+
+use Hyperf\Utils\Arr;
+use Hyperf\Di\Annotation\Inject;
+use Hyperf\Config\Annotation\Value;
+use Hyperf\Process\AbstractProcess;
 
 class WorkerProcess extends AbstractProcess
 {
@@ -47,7 +48,7 @@ class WorkerProcess extends AbstractProcess
      */
     public function handle(): void
     {
-        console()->notice('=== 自定义进程启动 ===');
+        console()->notice('=== 开始连接Canal Server服务器 ===');
 
         try {
             $canal  = $this->_canal;
@@ -78,7 +79,7 @@ class WorkerProcess extends AbstractProcess
 
             $client->disConnect();
         } catch (\Throwable $e) {
-            console()->error(sprintf('Canal Server服务器连接失败！'));
+            console()->error('=== Canal Server服务器连接失败 ===');
         }
     }
 }
