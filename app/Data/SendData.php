@@ -2,9 +2,12 @@
 
 namespace App\Data;
 
+use App\Amqp\Producer\CanalProducer;
+
 use Hyperf\Nsq\Nsq;
 use Hyperf\Utils\Arr;
 use Hyperf\Config\Annotation\Value;
+
 use Com\Alibaba\Otter\Canal\Protocol\Entry;
 use Com\Alibaba\Otter\Canal\Protocol\RowData;
 use Com\Alibaba\Otter\Canal\Protocol\EntryType;
@@ -17,6 +20,21 @@ class SendData
      * @Value("app.apiUrl")
      */
     private $_apiUrl;
+
+    /**
+     * @Value("app.openAPI")
+     */
+    private $_openAPI;
+
+    /**
+     * @Value("app.amqpQueue")
+     */
+    private $_amqpQueue;
+
+    /**
+     * @Value("app.nsqQueue")
+     */
+    private $_nsqQueue;
 
     /**
      * @Value("app.nsqTopic")
@@ -115,9 +133,10 @@ class SendData
             }
 
             $taskId = md5($data);
+            logger('canal')->info($taskId, ['sql' => $data]);
 
-            // POST提交数据
-            if ( ! empty($this->_apiUrl)) {
+            // API 接口
+            if ($this->_openAPI == 1 && ! empty($this->_apiUrl)) {
                 $args   = [];
                 $apiUrl = explode(',', $this->_apiUrl);
 
@@ -131,16 +150,24 @@ class SendData
 
                 if ( ! empty($args)) {
                     $query = sendMultiRequest($args);
-                    console()->info(sprintf('%s[URL]:%s', $taskId, (Arr::get($query, 'code') == 200) ? '发送成功！' : Arr::get($query, 'message')));
+                    logger('canal')->info(sprintf('%s[API]:%s', $taskId, (Arr::get($query, 'code') == 200) ? '发送成功！' : Arr::get($query, 'message')));
                 }
             }
 
-            // NSQ队列
-            if ( ! empty($this->_nsqTopic)) {
-                $nsq = make(Nsq::class);
-                $nsq->publish($this->_nsqTopic, $data);
+            // AMQP 队列
+            if ($this->_amqpQueue == 1) {
+                $message = new CanalProducer($data);
+                $query   = amqp()->produce($message);
 
-                console()->info(sprintf('%s[NSQ]:%s', $taskId, $data));
+                logger('canal')->info(sprintf('%s[AMQP]:%s', $taskId, ( ! empty($query)) ? '投递成功！' : '投递失败！'));
+            }
+
+            // NSQ队列
+            if ($this->_nsqQueue == 1) {
+                $nsq   = make(Nsq::class);
+                $query = $nsq->publish($this->_nsqTopic, $data);
+
+                logger('canal')->info(sprintf('%s[NSQ]:%s', $taskId, ( ! empty($query)) ? '投递成功！' : '投递失败！'));
             }
 
             $status = ['code' => 200, 'data' => [], 'message' => ''];

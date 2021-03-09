@@ -4,6 +4,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
 
 use Hyperf\Utils\Arr;
+use Hyperf\Amqp\Producer;
 use Hyperf\Redis\RedisFactory;
 use Hyperf\Logger\LoggerFactory;
 use Hyperf\Utils\ApplicationContext;
@@ -13,6 +14,19 @@ use Hyperf\Snowflake\IdGeneratorInterface;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface;
 use Hyperf\Validation\Contract\ValidatorFactoryInterface;
+
+/**
+ * AMQP
+ *
+ * @access public
+ * @return Producer|mixed
+ */
+if ( ! function_exists('amqp')) {
+    function amqp()
+    {
+        return container()->get(Producer::class);
+    }
+}
 
 /**
  * 控制台日志

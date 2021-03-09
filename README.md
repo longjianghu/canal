@@ -4,13 +4,13 @@
 
 ## 项目说明
 
-使用[Canal Server](https://github.com/alibaba/canal)监听数据库变动,目前支持使用HTTP POST和和投递到NSQ消息队列两种处理方式(协程方式)。
+使用[Canal Server](https://github.com/alibaba/canal) 监听数据库变动,目前支持使用API接口、NSQ和RabbitMQ三种处理方式(不保证先后顺序)。
 
 HTTP POST:当程序监听到变化后，使用HTTP POST的方式把数据提交到指定的地址。
 
 > URL可以有多个使用英文逗号分隔,使用data接收提交数据。
 
-NSQ 消息队列：把数据投递到NSQ消息队列，等待客户端进行消费。
+NSQ和RabbitMQ：把数据投递消息队列，等待客户端进行消费。
 
 > 在runtime/logs目录下会有对应的日志文件可以进行查看。
 
@@ -59,6 +59,12 @@ docker run --name nsqadmin -p 4171:4171 -d nsqio/nsq /nsqadmin -lookupd-http-add
 ```
 > 请注意：如果不是本地请指定内网或者外网IP地址(nsqd和nsqadmin容器), max-req-timeout延迟消息最大值！！！
 
+## RabbitMQ
+
+```
+docker run --name rabbitmq -p 5672:5672 -p 15672:15672 -m 300M --restart=always -d rabbitmq:3.8.14-management-alpine
+```
+
 ## 使用镜像
 
 请根据你的实际路径进行调整
@@ -82,7 +88,7 @@ step1:
 > /data/var/www/canal请根据你的实际路径进行调整。
 
 ```
-docker run --rm -it -v /data/var/www/canal:/data longjianghu/hyperf:2.0 sh
+docker run --rm -it -v /data/var/www/canal:/data longjianghu/hyperf:2.1 sh
 ```
 
 setp2:
@@ -104,7 +110,7 @@ step4:
 退出窗口并执行
 
 ```
-docker run --name canal.client -v /data/var/www/canal:/data --restart=always -d longjianghu/hyperf:2.0
+docker run --name canal.client -v /data/var/www/canal:/data --restart=always -d longjianghu/hyperf:2.1
 ```
 
 > 因为不需要外部链接所以不用开放端口

@@ -48,7 +48,7 @@ class WorkerProcess extends AbstractProcess
      */
     public function handle(): void
     {
-        console()->notice('=== 开始连接Canal Server服务器 ===');
+        console()->notice(sprintf('[%s]连接Canal Server服务器', date('Y-m-d H:i:s')));
 
         try {
             $canal  = $this->_canal;
@@ -79,7 +79,7 @@ class WorkerProcess extends AbstractProcess
 
             $client->disConnect();
         } catch (\Throwable $e) {
-            console()->error('=== Canal Server服务器连接失败 ===');
+            console()->notice(sprintf('[%s]Canal Server服务器连接失败', date('Y-m-d H:i:s')));
         }
     }
 }
