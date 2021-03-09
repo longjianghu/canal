@@ -62,7 +62,7 @@ docker run --name nsqadmin -p 4171:4171 -d nsqio/nsq /nsqadmin -lookupd-http-add
 ## RabbitMQ
 
 ```
-docker run --name rabbitmq -p 5672:5672 -p 15672:15672 -m 300M --restart=always -d rabbitmq:3.8.14-management-alpine
+docker run --name rabbitmq -p 5672:5672 -p 15672:15672 --restart=always -d rabbitmq:3.8.14-management-alpine
 ```
 
 ## 使用镜像
