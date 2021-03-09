@@ -21,6 +21,21 @@ class WorkerProcess extends AbstractProcess
     private $_canal;
 
     /**
+     * @Value("app.openAPI")
+     */
+    private $_openAPI;
+
+    /**
+     * @Value("app.amqpQueue")
+     */
+    private $_amqpQueue;
+
+    /**
+     * @Value("app.nsqQueue")
+     */
+    private $_nsqQueue;
+
+    /**
      * @Inject()
      * @var SendData
      */
@@ -68,7 +83,20 @@ class WorkerProcess extends AbstractProcess
 
                             if (Arr::get($entry, 'code') == 200) {
                                 $entry = Arr::get($entry, 'data');
-                                $this->_sendData->send($entry);
+
+                                logger('canal')->info(md5($entry), ['sql' => $entry]);
+
+                                if ($this->_amqpQueue == 1) {
+                                    $this->_sendData->amqp($entry);
+                                }
+
+                                if ($this->_nsqQueue == 1) {
+                                    $this->_sendData->nsq($entry);
+                                }
+
+                                if ($this->_openAPI == 1) {
+                                    $this->_sendData->api($entry);
+                                }
                             }
                         });
                     }

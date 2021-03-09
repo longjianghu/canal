@@ -22,24 +22,106 @@ class SendData
     private $_apiUrl;
 
     /**
-     * @Value("app.openAPI")
-     */
-    private $_openAPI;
-
-    /**
-     * @Value("app.amqpQueue")
-     */
-    private $_amqpQueue;
-
-    /**
-     * @Value("app.nsqQueue")
-     */
-    private $_nsqQueue;
-
-    /**
      * @Value("app.nsqTopic")
      */
     private $_nsqTopic;
+
+    /**
+     * AMQP
+     *
+     * @access public
+     * @param string $data 发送数据
+     * @return array
+     */
+    public function amqp(string $data)
+    {
+        $status = ['code' => 0, 'data' => [], 'message' => ''];
+
+        try {
+            if (empty($data)) {
+                throw new \Exception('发送数据不能为空！');
+            }
+
+            $message = new CanalProducer($data);
+            $query   = amqp()->produce($message);
+
+            logger('canal')->info(sprintf('%s[AMQP]:%s', md5($data), ( ! empty($query)) ? '投递成功！' : '投递失败！'));
+
+            $status = ['code' => 200, 'data' => [], 'message' => ''];
+        } catch (\Throwable $e) {
+            $status['message'] = $e->getMessage();
+        }
+
+        return $status;
+    }
+
+    /**
+     * 发送数据
+     *
+     * @access public
+     * @param string $data 发送数据
+     * @return array
+     */
+    public function api(string $data)
+    {
+        $status = ['code' => 0, 'data' => [], 'message' => ''];
+
+        try {
+            if (empty($data)) {
+                throw new \Exception('发送数据不能为空！');
+            }
+
+            if (empty($this->_apiUrl)) {
+                throw new \Exception('API接口地址不正确！');
+            }
+
+            if ( ! filter_var($this->_apiUrl, FILTER_VALIDATE_URL)) {
+                throw new \Exception('API接口地址格式不正确！');
+            }
+
+            $query = sendRequest($this->_apiUrl, ['data' => $data], [], 'POST');
+            logger('canal')->info(sprintf('%s[API]:%s', md5($data), (Arr::get($query, 'code') == 200) ? '发送成功！' : '发送失败！'));
+
+            $status = ['code' => 200, 'data' => [], 'message' => ''];
+        } catch (\Throwable $e) {
+            $status['message'] = $e->getMessage();
+        }
+
+        return $status;
+    }
+
+    /**
+     * 发送数据
+     *
+     * @access public
+     * @param string $data 发送数据
+     * @return array
+     */
+    public function nsq(string $data)
+    {
+        $status = ['code' => 0, 'data' => [], 'message' => ''];
+
+        try {
+            if (empty($data)) {
+                throw new \Exception('发送数据不能为空！');
+            }
+
+            if (empty($this->_nsqTopic)) {
+                throw new \Exception('NSQ TOPI 参数未配置！');
+            }
+
+            $nsq   = make(Nsq::class);
+            $query = $nsq->publish($this->_nsqTopic, $data);
+
+            logger('canal')->info(sprintf('%s[NSQ]:%s', md5($data), ( ! empty($query)) ? '投递成功！' : '投递失败！'));
+
+            $status = ['code' => 200, 'data' => [], 'message' => ''];
+        } catch (\Throwable $e) {
+            $status['message'] = $e->getMessage();
+        }
+
+        return $status;
+    }
 
     /**
      * 解析数据
@@ -109,68 +191,6 @@ class SendData
             $data = json_encode($data);
 
             $status = ['code' => 200, 'data' => $data, 'message' => ''];
-        } catch (\Throwable $e) {
-            $status['message'] = $e->getMessage();
-        }
-
-        return $status;
-    }
-
-    /**
-     * 发送数据
-     *
-     * @access public
-     * @param string $data 发送数据
-     * @return array
-     */
-    public function send(string $data)
-    {
-        $status = ['code' => 0, 'data' => [], 'message' => ''];
-
-        try {
-            if (empty($data)) {
-                throw new \Exception('发送数据不能为空！');
-            }
-
-            $taskId = md5($data);
-            logger('canal')->info($taskId, ['sql' => $data]);
-
-            // API 接口
-            if ($this->_openAPI == 1 && ! empty($this->_apiUrl)) {
-                $args   = [];
-                $apiUrl = explode(',', $this->_apiUrl);
-
-                foreach ($apiUrl as $k => $v) {
-                    if ( ! filter_var($v, FILTER_VALIDATE_URL)) {
-                        continue;
-                    }
-
-                    $args[] = ['url' => $v, 'method' => 'post', 'query' => ['data' => $data]];
-                }
-
-                if ( ! empty($args)) {
-                    $query = sendMultiRequest($args);
-                    logger('canal')->info(sprintf('%s[API]:%s', $taskId, (Arr::get($query, 'code') == 200) ? '发送成功！' : Arr::get($query, 'message')));
-                }
-            }
-
-            // AMQP 队列
-            if ($this->_amqpQueue == 1) {
-                $message = new CanalProducer($data);
-                $query   = amqp()->produce($message);
-
-                logger('canal')->info(sprintf('%s[AMQP]:%s', $taskId, ( ! empty($query)) ? '投递成功！' : '投递失败！'));
-            }
-
-            // NSQ队列
-            if ($this->_nsqQueue == 1) {
-                $nsq   = make(Nsq::class);
-                $query = $nsq->publish($this->_nsqTopic, $data);
-
-                logger('canal')->info(sprintf('%s[NSQ]:%s', $taskId, ( ! empty($query)) ? '投递成功！' : '投递失败！'));
-            }
-
-            $status = ['code' => 200, 'data' => [], 'message' => ''];
         } catch (\Throwable $e) {
             $status['message'] = $e->getMessage();
         }
