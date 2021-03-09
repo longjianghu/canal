@@ -4,7 +4,7 @@ return [
     'default' => [
         'enable' => true,
         'host'   => env('NSQ_CLIENT_IP', '172.17.0.1'),
-        'port'   => env('NSQ_CLIENT_PORT', 4150),
+        'port'   => (int)env('NSQ_CLIENT_PORT', 4150),
         'pool'   => [
             'min_connections' => 1,
             'max_connections' => 10,
