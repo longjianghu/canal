@@ -207,7 +207,7 @@ if ( ! function_exists('sendMultiRequest')) {
                 $promises[] = ($method == 'POST') ? $client->postAsync($url, $options) : $client->getAsync($url, $options);
             }
 
-            $result = Promise\unwrap($promises);
+            $result = Promise\Utils::unwrap($promises);
 
             foreach ($result as $k => $v) {
                 $data[$k] = ($v->getStatusCode() == 200) ? $v->getBody()->getContents() : $v->getReasonPhrase();
