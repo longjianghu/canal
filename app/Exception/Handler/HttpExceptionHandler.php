@@ -2,12 +2,14 @@
 
 namespace App\Exception\Handler;
 
+use Throwable;
+
+use Psr\Http\Message\ResponseInterface;
+
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\ExceptionHandler\ExceptionHandler;
-use Hyperf\ExceptionHandler\Formatter\FormatterInterface;
 use Hyperf\HttpMessage\Exception\HttpException;
-use Psr\Http\Message\ResponseInterface;
-use Throwable;
+use Hyperf\ExceptionHandler\Formatter\FormatterInterface;
 
 class HttpExceptionHandler extends ExceptionHandler
 {
@@ -30,9 +32,11 @@ class HttpExceptionHandler extends ExceptionHandler
     /**
      * Handle the exception, and return the specified result.
      *
-     * @param HttpException $throwable
+     * @param Throwable         $e
+     * @param ResponseInterface $response
+     * @return ResponseInterface
      */
-    public function handle(Throwable $e, ResponseInterface $response)
+    public function handle(Throwable $e, ResponseInterface $response): ResponseInterface
     {
         $this->logger->debug($this->formatter->format($e));
 

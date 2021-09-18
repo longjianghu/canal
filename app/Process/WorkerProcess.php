@@ -2,9 +2,11 @@
 
 namespace App\Process;
 
+use Throwable;
+use Psr\Container\ContainerInterface;
+
 use App\Data\SendData;
 
-use Psr\Container\ContainerInterface;
 use xingwenge\canal_php\CanalClient;
 use xingwenge\canal_php\CanalConnectorFactory;
 
@@ -51,8 +53,6 @@ class WorkerProcess extends AbstractProcess
     public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
-
-        $this->nums = config('app.workerNum', swoole_cpu_num());
     }
 
     /**
@@ -74,10 +74,10 @@ class WorkerProcess extends AbstractProcess
             $client->subscribe(Arr::get($canal, 'clientId'), Arr::get($canal, 'destination'), Arr::get($canal, 'filter'));
 
             while (true) {
-                $message = $client->get(100)->getEntries();
+                $message = $client->get()->getEntries();
 
-                if ( ! empty($message)) {
-                    foreach ($message as $k => $v) {
+                if (! empty($message)) {
+                    foreach ($message as $v) {
                         go(function () use ($v) {
                             $entry = $this->_sendData->parseEntryData($v);
 
@@ -106,7 +106,7 @@ class WorkerProcess extends AbstractProcess
             }
 
             $client->disConnect();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             console()->notice(sprintf('[%s]Canal Server服务器连接失败', date('Y-m-d H:i:s')));
         }
     }

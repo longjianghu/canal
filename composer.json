@@ -13,35 +13,34 @@
     "license": "Apache-2.0",
     "require": {
         "php": ">=7.3",
-        "guzzlehttp/guzzle": "^7.2",
-        "hyperf/amqp": "^2.1",
-        "hyperf/cache": "~2.1.0",
-        "hyperf/command": "~2.1.0",
-        "hyperf/config": "~2.1.0",
-        "hyperf/db-connection": "~2.1.0",
-        "hyperf/framework": "~2.1.0",
-        "hyperf/guzzle": "~2.1.0",
-        "hyperf/http-server": "~2.1.0",
-        "hyperf/logger": "~2.1.0",
-        "hyperf/memory": "~2.1.0",
-        "hyperf/nsq": "^2.1",
-        "hyperf/process": "~2.1.0",
+        "hyperf/cache": "~2.2.0",
+        "hyperf/command": "~2.2.0",
+        "hyperf/config": "~2.2.0",
+        "hyperf/db-connection": "~2.2.0",
+        "hyperf/framework": "~2.2.0",
+        "hyperf/guzzle": "~2.2.0",
+        "hyperf/http-server": "~2.2.0",
+        "hyperf/logger": "~2.2.0",
+        "hyperf/memory": "~2.2.0",
+        "hyperf/process": "~2.2.0",
+        "hyperf/database": "~2.2.0",
         "xingwenge/canal_php": "^1.0"
     },
     "require-dev": {
-        "swoole/ide-helper": "^4.5",
-        "friendsofphp/php-cs-fixer": "^2.14",
+        "friendsofphp/php-cs-fixer": "^3.0",
+        "hyperf/devtool": "~2.2.0",
+        "hyperf/ide-helper": "~2.2.0",
+        "hyperf/testing": "~2.2.0",
         "mockery/mockery": "^1.0",
         "phpstan/phpstan": "^0.12",
-        "hyperf/devtool": "~2.1.0",
-        "hyperf/testing": "~2.1.0"
+        "swoole/ide-helper": "^4.5"
     },
     "suggest": {
         "ext-openssl": "Required to use HTTPS.",
-        "ext-json": "Required to use JSON.",
         "ext-pdo": "Required to use MySQL Client.",
         "ext-pdo_mysql": "Required to use MySQL Client.",
-        "ext-redis": "Required to use Redis Client."
+        "ext-redis": "Required to use Redis Client.",
+        "ext-json": "Required to use JSON."
     },
     "autoload": {
         "psr-4": {

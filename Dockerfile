@@ -1,4 +1,4 @@
-FROM longjianghu/hyperf:2.1
+FROM longjianghu/hyperf:2.2
 
 MAINTAINER Longjianghu <215241062@qq.com>
 

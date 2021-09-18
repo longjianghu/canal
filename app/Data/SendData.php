@@ -4,6 +4,9 @@ namespace App\Data;
 
 use App\Amqp\Producer\CanalProducer;
 
+use Exception;
+use Throwable;
+
 use Hyperf\Nsq\Nsq;
 use Hyperf\Utils\Arr;
 use Hyperf\Config\Annotation\Value;
@@ -33,22 +36,22 @@ class SendData
      * @param string $data 发送数据
      * @return array
      */
-    public function amqp(string $data)
+    public function amqp(string $data): array
     {
         $status = ['code' => 0, 'data' => [], 'message' => ''];
 
         try {
             if (empty($data)) {
-                throw new \Exception('发送数据不能为空！');
+                throw new Exception('发送数据不能为空！');
             }
 
             $message = new CanalProducer($data);
             $query   = amqp()->produce($message);
 
-            logger('canal')->info(sprintf('%s[AMQP]:%s', md5($data), ( ! empty($query)) ? '投递成功！' : '投递失败！'));
+            logger('canal')->info(sprintf('%s[AMQP]:%s', md5($data), (! empty($query)) ? '投递成功！' : '投递失败！'));
 
             $status = ['code' => 200, 'data' => [], 'message' => ''];
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $status['message'] = $e->getMessage();
         }
 
@@ -62,28 +65,28 @@ class SendData
      * @param string $data 发送数据
      * @return array
      */
-    public function api(string $data)
+    public function api(string $data): array
     {
         $status = ['code' => 0, 'data' => [], 'message' => ''];
 
         try {
             if (empty($data)) {
-                throw new \Exception('发送数据不能为空！');
+                throw new Exception('发送数据不能为空！');
             }
 
             if (empty($this->_apiUrl)) {
-                throw new \Exception('API接口地址不正确！');
+                throw new Exception('API接口地址不正确！');
             }
 
-            if ( ! filter_var($this->_apiUrl, FILTER_VALIDATE_URL)) {
-                throw new \Exception('API接口地址格式不正确！');
+            if (! filter_var($this->_apiUrl, FILTER_VALIDATE_URL)) {
+                throw new Exception('API接口地址格式不正确！');
             }
 
             $query = sendRequest($this->_apiUrl, ['data' => $data], [], 'POST');
             logger('canal')->info(sprintf('%s[API]:%s', md5($data), (Arr::get($query, 'code') == 200) ? '发送成功！' : '发送失败！'));
 
             $status = ['code' => 200, 'data' => [], 'message' => ''];
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $status['message'] = $e->getMessage();
         }
 
@@ -97,26 +100,26 @@ class SendData
      * @param string $data 发送数据
      * @return array
      */
-    public function nsq(string $data)
+    public function nsq(string $data): array
     {
         $status = ['code' => 0, 'data' => [], 'message' => ''];
 
         try {
             if (empty($data)) {
-                throw new \Exception('发送数据不能为空！');
+                throw new Exception('发送数据不能为空！');
             }
 
             if (empty($this->_nsqTopic)) {
-                throw new \Exception('NSQ TOPI 参数未配置！');
+                throw new Exception('NSQ TOPI 参数未配置！');
             }
 
             $nsq   = make(Nsq::class);
             $query = $nsq->publish($this->_nsqTopic, $data);
 
-            logger('canal')->info(sprintf('%s[NSQ]:%s', md5($data), ( ! empty($query)) ? '投递成功！' : '投递失败！'));
+            logger('canal')->info(sprintf('%s[NSQ]:%s', md5($data), (! empty($query)) ? '投递成功！' : '投递失败！'));
 
             $status = ['code' => 200, 'data' => [], 'message' => ''];
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $status['message'] = $e->getMessage();
         }
 
@@ -130,17 +133,17 @@ class SendData
      * @param Entry $entry 实例
      * @return array
      */
-    public function parseEntryData(Entry $entry)
+    public function parseEntryData(Entry $entry): array
     {
         $status = ['code' => 0, 'data' => [], 'message' => ''];
 
         try {
             if (empty($entry)) {
-                throw new \Exception('实例数据不能为空！');
+                throw new Exception('实例数据不能为空！');
             }
 
             if (in_array($entry->getEntryType(), [EntryType::TRANSACTIONBEGIN, EntryType::TRANSACTIONEND])) {
-                throw new \Exception('事务事件直接忽略！');
+                throw new Exception('事务事件直接忽略！');
             }
 
             $rowChange = new RowChange();
@@ -161,7 +164,7 @@ class SendData
             ];
 
             $sql = $rowChange->getSql();
-            $sql = ( ! empty($sql)) ? sprintf('%s;', $sql) : '';
+            $sql = (! empty($sql)) ? sprintf('%s;', $sql) : '';
 
             $data['sql'] = str_replace(PHP_EOL, '', $sql);
 
@@ -170,7 +173,7 @@ class SendData
             /**
              * @var RowData $rowDatas
              */
-            foreach ($rowDatas as $k => $v) {
+            foreach ($rowDatas as $v) {
                 $before = $v->getBeforeColumns();
                 $after  = $v->getAfterColumns();
 
@@ -191,7 +194,7 @@ class SendData
             $data = json_encode($data);
 
             $status = ['code' => 200, 'data' => $data, 'message' => ''];
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $status['message'] = $e->getMessage();
         }
 
@@ -205,11 +208,11 @@ class SendData
      * @param object $columns 数据列
      * @return array
      */
-    private function _getColumnData(object $columns)
+    private function _getColumnData(object $columns): array
     {
         $data = [];
 
-        foreach ($columns as $k => $v) {
+        foreach ($columns as $v) {
             $data[$v->getName()] = $v->getValue();
         }
 

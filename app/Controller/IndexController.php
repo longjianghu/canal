@@ -2,15 +2,17 @@
 
 namespace App\Controller;
 
+use Psr\Http\Message\ResponseInterface;
+
 class IndexController extends AbstractController
 {
     /**
      * 默认首页
      *
      * @access public
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
      */
-    public function index()
+    public function index(): ResponseInterface
     {
         return withJson(['code' => 200, 'data' => ['canal.client'], 'message' => '']);
     }
