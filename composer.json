@@ -16,14 +16,15 @@
         "hyperf/cache": "~2.2.0",
         "hyperf/command": "~2.2.0",
         "hyperf/config": "~2.2.0",
+        "hyperf/database": "~2.2.0",
         "hyperf/db-connection": "~2.2.0",
         "hyperf/framework": "~2.2.0",
         "hyperf/guzzle": "~2.2.0",
         "hyperf/http-server": "~2.2.0",
         "hyperf/logger": "~2.2.0",
         "hyperf/memory": "~2.2.0",
+        "hyperf/nsq": "^2.2",
         "hyperf/process": "~2.2.0",
-        "hyperf/database": "~2.2.0",
         "xingwenge/canal_php": "^1.0"
     },
     "require-dev": {
@@ -49,11 +50,6 @@
         "files": [
             "app/Helper/Functions.php"
         ]
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "HyperfTest\\": "./test/"
-        }
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
